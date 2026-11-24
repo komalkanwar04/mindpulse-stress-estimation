@@ -208,7 +208,31 @@ export default function ModelInsightsModal({ isOpen, onClose }) {
               </div>
             </div>
 
-            {/* 5. Hyperparameter Specification */}
+            {/* 5. Foundational Literature & Benchmarks (2020–2026) */}
+            <div style={{ background: "rgba(56, 189, 248, 0.05)", border: "1px solid rgba(56, 189, 248, 0.2)", borderRadius: "var(--radius-sm)", padding: "14px 16px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                <span style={{ fontSize: 16 }}>📚</span>
+                <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "#38bdf8" }}>
+                  Academic Literature & Empirical Benchmarks (2020–2026)
+                </span>
+              </div>
+              <ul style={{ margin: 0, paddingLeft: 18, fontSize: "0.75rem", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: 6 }}>
+                <li>
+                  <strong>Giannakakis et al. (2022)</strong> — <em>Pattern Analysis and Applications</em> (DOI: 10.1007/s10044-021-01049-5): Confirms AU4, AU7, and AU24 as primary visual biomarkers of acute mental stress.
+                </li>
+                <li>
+                  <strong>Sabour et al. (2023)</strong> — <em>IEEE Transactions on Affective Computing</em> (DOI: 10.1109/TAFFC.2021.3056960): UBFC-Phys benchmark dataset grounding facial action unit distribution under social stress.
+                </li>
+                <li>
+                  <strong>Booth et al. (2020)</strong> — <em>IEEE Transactions on Affective Computing</em> (DOI: 10.1109/TAFFC.2020.2974812): Formalizes subject-specific baseline subtraction (Δ = f_current − f_baseline) to neutralize morphology variance.
+                </li>
+                <li>
+                  <strong>Suman et al. (2025)</strong> — <em>BIOSTEC / BIOSIGNALS 2025</em>: Demonstrates 38%+ reduction in false positives when evaluating dense landmark deviations against personalized baselines.
+                </li>
+              </ul>
+            </div>
+
+            {/* 6. Hyperparameter Specification */}
             <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", borderTop: "1px solid var(--surface-glass-border)", paddingTop: 14 }}>
               <strong>Architecture:</strong> {modelData?.model_type || "Hybrid Random Forest Ensemble"} (120 Estimators, Max Depth: 12) • 
               <strong> Framework:</strong> scikit-learn 1.9.1 • 

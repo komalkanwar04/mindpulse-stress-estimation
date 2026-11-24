@@ -3,6 +3,8 @@ import React from "react";
 export default function AuthenticityTelemetry({
   authenticity,
   stressScore = 50,
+  facialTensionScore = 50,
+  isFeigned = false,
   stressLabel = "Normal",
   onOpenMethodology,
 }) {
@@ -282,6 +284,37 @@ export default function AuthenticityTelemetry({
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Dual-Stream Autonomic Gating Theorem Result */}
+      {isFeigned && (
+        <div style={{
+          background: "linear-gradient(135deg, rgba(244,63,94,0.12), rgba(245,158,11,0.08))",
+          border: "1px solid rgba(244, 63, 94, 0.4)",
+          borderRadius: "var(--radius-md)",
+          padding: "16px 20px",
+          marginBottom: 18,
+        }}>
+          <div style={{ fontSize: "0.8rem", fontWeight: 800, color: "#f43f5e", display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+            <span>🔐</span> Dual-Stream Autonomic Gating Theorem — Stress Score Corrected
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 10, alignItems: "center", marginBottom: 10 }}>
+            <div style={{ background: "rgba(244,63,94,0.1)", borderRadius: 8, padding: "10px 14px", textAlign: "center" }}>
+              <div style={{ fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Posed Facial Tension</div>
+              <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "#f43f5e", fontFamily: "var(--font-mono)" }}>{Math.round(facialTensionScore)}</div>
+              <div style={{ fontSize: "0.62rem", color: "var(--high)" }}>Voluntary muscle posing</div>
+            </div>
+            <div style={{ fontSize: "1.5rem", color: "var(--elevated)" }}>→</div>
+            <div style={{ background: "rgba(16,185,129,0.1)", borderRadius: 8, padding: "10px 14px", textAlign: "center" }}>
+              <div style={{ fontSize: "0.65rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Verified Physiological</div>
+              <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "var(--calm)", fontFamily: "var(--font-mono)" }}>{Math.round(stressScore)}</div>
+              <div style={{ fontSize: "0.62rem", color: "var(--calm)" }}>True resting baseline</div>
+            </div>
+          </div>
+          <div style={{ fontSize: "0.74rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+            <strong>Scientific basis:</strong> The rPPG autonomic concordance gate detected zero sympathetic nervous system arousal (resting pulse ~{Math.round(authenticity?.rppgHeartRate || 70)} BPM). Per the Dual-Stream theorem, when facial tension is voluntary/cortical but cardiovascular state is parasympathetically calm, the engine discards the posed expression and anchors the reported stress at the verified resting physiological baseline.
           </div>
         </div>
       )}

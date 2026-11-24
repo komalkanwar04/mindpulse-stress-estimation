@@ -1,5 +1,5 @@
-const ML_SERVICE_URL = "http://localhost:5001";
-const BACKEND_URL = "http://localhost:4000";
+const ML_SERVICE_URL = import.meta.env.VITE_ML_SERVICE_URL || "http://localhost:5001";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
 
 export async function analyzeFrame(imageBase64, baseline = null, sessionId = null) {
   const res = await fetch(`${ML_SERVICE_URL}/analyze`, {

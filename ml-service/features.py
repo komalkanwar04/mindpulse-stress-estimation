@@ -63,16 +63,20 @@ def extract_raw_features_from_pts(pts):
     eye_asymmetry = abs(left_ear - right_ear)
 
     # 4. Mouth tension ratio (AU14 / AU24: Lip pressor & compression)
+    # Using outer lip borders (0: upper vermilion center, 17: lower vermilion center)
+    # with inner lip fallback and safe minimum height to prevent division by near-zero.
     mouth_w = dist_2d(pts[MOUTH_LEFT], pts[MOUTH_RIGHT])
-    mouth_h = dist_2d(pts[MOUTH_TOP], pts[MOUTH_BOTTOM])
-    mouth_ratio = mouth_w / mouth_h if mouth_h > 0 else 0.0
+    outer_mouth_h = dist_2d(pts[0], pts[17])
+    inner_mouth_h = dist_2d(pts[MOUTH_TOP], pts[MOUTH_BOTTOM])
+    mouth_h = max(outer_mouth_h, inner_mouth_h, face_width * 0.05, 4.0)
+    mouth_ratio = round(min(8.0, max(0.5, mouth_w / mouth_h)), 4)
 
     # Baseline Heuristic Raw Index (for backward compatibility)
     raw = (
         (1 - min(brow_eye_dist / 0.35, 1)) * 35
         + (1 - min(inter_brow_dist / 0.9, 1)) * 25
         + (1 - min(ear / 0.35, 1)) * 20
-        + min(mouth_ratio / 6.0, 1) * 20
+        + min(mouth_ratio / 5.0, 1) * 20
     )
     raw_stress_index = round(max(0, min(100, raw)), 2)
 
@@ -118,7 +122,8 @@ def compute_delta_feature_vector(current, baseline):
     d_ear = cur_ear - base_ear
 
     cur_mouth = float(current.get("mouthTensionRatio", 3.0))
-    base_mouth = float(baseline.get("mouth_tension_ratio", baseline.get("mouthTensionRatio", 3.0)))
+    raw_base_mouth = float(baseline.get("mouth_tension_ratio", baseline.get("mouthTensionRatio", 3.0)))
+    base_mouth = min(6.0, max(1.0, raw_base_mouth if raw_base_mouth < 20.0 else 3.0))
     d_mouth = cur_mouth - base_mouth
     rel_mouth = d_mouth / base_mouth if base_mouth > 0 else 0.0
 

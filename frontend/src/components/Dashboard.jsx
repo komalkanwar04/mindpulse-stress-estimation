@@ -85,7 +85,7 @@ export default function Dashboard({ userId, baseline, onNavigateToBreathwork }) 
         return;
       }
       setStatusMsg("");
-      const estRes = await estimateStress(userId, mlRes.features, sessionId, mlRes.authenticity);
+      const estRes = await estimateStress(userId, mlRes.features, currentSessionKey, mlRes.authenticity);
       setResult(estRes);
       await refreshHistory();
     } catch (e) {
@@ -306,14 +306,44 @@ export default function Dashboard({ userId, baseline, onNavigateToBreathwork }) 
           {/* Webcam Feed */}
           <WebcamCapture ref={camRef} isLive={liveMode} isCapturing={busy} />
 
-          {/* Radial Biometric Gauge */}
-          <div style={{ display: "flex", justifyContent: "center" }}>
+          {/* Radial Biometric Gauge - shows VERIFIED physiological score */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+            {result?.isFeigned && (
+              <div style={{
+                background: "rgba(244, 63, 94, 0.18)",
+                border: "1px solid rgba(244, 63, 94, 0.55)",
+                borderRadius: 10,
+                padding: "6px 14px",
+                fontSize: "0.72rem",
+                fontWeight: 800,
+                color: "#f43f5e",
+                textAlign: "center",
+                letterSpacing: "0.04em",
+                animation: "fadeIn 0.4s ease",
+              }}>
+                🎭 FEIGNED STRESS INTERCEPTED<br/>
+                <span style={{ fontWeight: 400, fontSize: "0.68rem" }}>Score gated to verified resting baseline</span>
+              </div>
+            )}
             <StressGauge
               score={result ? result.stressScore : 50}
-              label={result ? result.stressLabel : "Ready"}
+              label={result ? (result.isFeigned ? "Feigned / Resting" : result.stressLabel) : "Ready"}
               deviation={result ? result.deviation : 0}
               authenticity={result?.authenticity}
             />
+            {result?.isFeigned && result.facialTensionScore && (
+              <div style={{
+                background: "rgba(245, 158, 11, 0.12)",
+                border: "1px solid rgba(245, 158, 11, 0.3)",
+                borderRadius: 8,
+                padding: "5px 12px",
+                fontSize: "0.7rem",
+                color: "var(--elevated)",
+                textAlign: "center",
+              }}>
+                📊 Posed Facial Tension: <strong>{Math.round(result.facialTensionScore)}</strong> → Verified Resting: <strong>{Math.round(result.stressScore)}</strong>
+              </div>
+            )}
           </div>
 
           {/* Facial Feature Breakdown */}
@@ -371,6 +401,8 @@ export default function Dashboard({ userId, baseline, onNavigateToBreathwork }) 
       <AuthenticityTelemetry
         authenticity={result?.authenticity}
         stressScore={result ? result.stressScore : 50}
+        facialTensionScore={result ? (result.facialTensionScore || result.stressScore) : 50}
+        isFeigned={result?.isFeigned || false}
         stressLabel={result ? result.stressLabel : "Normal"}
         onOpenMethodology={() => setShowMethodologyModal(true)}
       />

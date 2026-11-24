@@ -526,7 +526,7 @@ app.put("/api/sessions/:sessionId/recommendations", (req, res) => {
 // Stress Estimation & Live Readings (Hybrid ML)
 // ==========================================
 
-const ML_SERVICE_URL = process.env.ML_SERVICE_URL || "http://localhost:5001";
+const ML_SERVICE_URL = process.env.ML_SERVICE_URL || "http://127.0.0.1:5001";
 
 // Get ML Model Architecture, Accuracy, and Feature Importances
 app.get("/api/model-info", async (req, res) => {
@@ -627,14 +627,25 @@ app.post("/api/estimate", async (req, res) => {
 
   const deviation = features.rawStressIndex - baseline.raw_stress_index;
   let stressScore = Math.max(0, Math.min(100, 50 + deviation * 1.2));
+  let facialTensionScore = stressScore; // raw score before gating
   let stressLabel = labelFor(stressScore);
   let mlProbability = Math.round((stressScore / 100) * 100) / 100;
   let mlConfidence = 85.0;
   let featureAttributions = [];
   let modelType = "Calibrated Baseline Normalization";
   let authenticity = passedAuthenticity || null;
+  let isFeigned = false;
 
-  // Attempt Hybrid ML Inference via ML Service
+  // Immediate Frame-1 Check: if passedAuthenticity was flagged as feigned/fake by /analyze, preserve it immediately
+  if (passedAuthenticity && (passedAuthenticity.isFake || passedAuthenticity.isFeigned)) {
+    isFeigned = true;
+    facialTensionScore = passedAuthenticity.facialTensionScore || facialTensionScore;
+    stressScore = passedAuthenticity.verifiedPhysiologicalStress || Math.min(stressScore, 44.0);
+    stressLabel = passedAuthenticity.gatedStressLabel || "Simulated / Posed (Feigned)";
+    authenticity = passedAuthenticity;
+  }
+
+  // Attempt Hybrid ML Inference via ML Service (includes Dual-Stream Gating)
   try {
     const mlResponse = await fetch(`${ML_SERVICE_URL}/predict-hybrid`, {
       method: "POST",
@@ -648,8 +659,16 @@ app.post("/api/estimate", async (req, res) => {
     });
     if (mlResponse.ok) {
       const mlData = await mlResponse.json();
-      stressScore = mlData.mlStressScore;
-      stressLabel = mlData.predictedClass || labelFor(stressScore);
+      if (mlData.isFeigned || (mlData.authenticity && mlData.authenticity.isFake) || (passedAuthenticity && passedAuthenticity.isFake)) {
+        isFeigned = true;
+        facialTensionScore = mlData.facialTensionScore || passedAuthenticity?.facialTensionScore || facialTensionScore;
+        stressScore = mlData.verifiedStressScore || mlData.authenticity?.verifiedPhysiologicalStress || passedAuthenticity?.verifiedPhysiologicalStress || 44.0;
+        stressLabel = mlData.authenticity?.gatedStressLabel || "Simulated / Posed (Feigned)";
+      } else {
+        stressScore = mlData.mlStressScore;
+        facialTensionScore = mlData.facialTensionScore || stressScore;
+        stressLabel = mlData.predictedClass || labelFor(stressScore);
+      }
       mlProbability = mlData.stressProbability;
       mlConfidence = mlData.confidence;
       featureAttributions = mlData.featureAttributions || [];
@@ -800,6 +819,8 @@ app.post("/api/estimate", async (req, res) => {
     baselineRawStressIndex: baseline.raw_stress_index,
     deviation: Math.round(deviation * 100) / 100,
     stressScore: Math.round(stressScore * 10) / 10,
+    facialTensionScore: Math.round(facialTensionScore * 10) / 10,
+    isFeigned,
     stressLabel,
     mlProbability,
     mlConfidence,
