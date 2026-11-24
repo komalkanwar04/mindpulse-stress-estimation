@@ -1,5 +1,5 @@
 {
-  "name": "stress-estimation-backend",
+  "name": "mindpulse-stress-estimation-backend",
   "version": "1.0.0",
   "description": "Node/Express API - user baselines, deviation scoring, history, wellness recommendations",
   "main": "server.js",

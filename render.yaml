@@ -4,7 +4,7 @@
 services:
   # 1. Python ML & Liveness Microservice
   - type: web
-    name: mindpulse-ml-service
+    name: mindpulse-stress-estimation-ml
     env: docker
     dockerfilePath: ml-service/Dockerfile
     dockerContext: ml-service
@@ -19,7 +19,7 @@ services:
 
   # 2. Node.js Backend API
   - type: web
-    name: mindpulse-backend
+    name: mindpulse-stress-estimation-backend
     env: node
     rootDir: backend
     buildCommand: npm install
@@ -37,12 +37,12 @@ services:
       - key: ML_SERVICE_URL
         fromService:
           type: web
-          name: mindpulse-ml-service
+          name: mindpulse-stress-estimation-ml
           property: host
 
   # 3. React Vite Frontend
   - type: web
-    name: mindpulse-frontend
+    name: mindpulse-stress-estimation-frontend
     env: static
     rootDir: frontend
     buildCommand: npm install && npm run build
@@ -55,10 +55,10 @@ services:
       - key: VITE_BACKEND_URL
         fromService:
           type: web
-          name: mindpulse-backend
+          name: mindpulse-stress-estimation-backend
           property: host
       - key: VITE_ML_SERVICE_URL
         fromService:
           type: web
-          name: mindpulse-ml-service
+          name: mindpulse-stress-estimation-ml
           property: host

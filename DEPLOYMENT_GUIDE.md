@@ -26,8 +26,8 @@ The fastest way to deploy all 3 tiers with a single command.
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/komalkanwar04/stress-estimation-platform.git
-   cd stress-estimation-platform
+   git clone https://github.com/komalkanwar04/mindpulse-stress-estimation.git
+   cd mindpulse-stress-estimation
    ```
 2. Build and launch all containers in detached mode:
    ```bash
@@ -60,11 +60,11 @@ Render supports multi-tier applications using the included `render.yaml` bluepri
    ```
 2. Log into [Render](https://render.com/).
 3. In the Render Dashboard, click **New +** $\to$ **Blueprint**.
-4. Connect your GitHub repository: `komalkanwar04/stress-estimation-platform`.
+4. Connect your GitHub repository: `komalkanwar04/mindpulse-stress-estimation`.
 5. Render will automatically read `render.yaml` and provision:
-   - `mindpulse-ml-service` (Docker Web Service)
-   - `mindpulse-backend` (Node Web Service with a 1GB persistent disk for SQLite)
-   - `mindpulse-frontend` (Static Site with SPA rewrite rules)
+   - `mindpulse-stress-estimation-ml` (Docker Web Service)
+   - `mindpulse-stress-estimation-backend` (Node Web Service with a 1GB persistent disk for SQLite)
+   - `mindpulse-stress-estimation-frontend` (Static Site with SPA rewrite rules)
 6. Click **Apply**. Render will build and deploy all three services with public HTTPS URLs!
 
 ---

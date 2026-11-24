@@ -15,7 +15,7 @@ export default function Navbar({
         <div className="brand-icon">🌿</div>
         <div>
           <h1 className="brand-title">MindPulse</h1>
-          <p className="brand-subtitle">Personalized Biometric Stress Platform</p>
+          <p className="brand-subtitle">Stress Estimation & Mental Wellness Platform</p>
         </div>
       </div>
 
