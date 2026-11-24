@@ -158,6 +158,15 @@ def extract_features_from_image(image_bgr):
     return features, pts
 
 
+@app.route("/", methods=["GET"])
+def root():
+    return jsonify({
+        "status": "ok",
+        "service": "MindPulse ML & Authenticity Service",
+        "modelLoaded": ml_model is not None,
+    })
+
+
 @app.route("/health", methods=["GET"])
 def health():
     return jsonify({

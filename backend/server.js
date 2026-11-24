@@ -526,7 +526,11 @@ app.put("/api/sessions/:sessionId/recommendations", (req, res) => {
 // Stress Estimation & Live Readings (Hybrid ML)
 // ==========================================
 
-const ML_SERVICE_URL = process.env.ML_SERVICE_URL || "http://127.0.0.1:5001";
+let rawMlUrl = process.env.ML_SERVICE_URL || "http://127.0.0.1:5001";
+if (rawMlUrl && !rawMlUrl.startsWith("http://") && !rawMlUrl.startsWith("https://")) {
+  rawMlUrl = rawMlUrl.includes("onrender.com") ? `https://${rawMlUrl}` : `http://${rawMlUrl}`;
+}
+const ML_SERVICE_URL = rawMlUrl;
 
 // Get ML Model Architecture, Accuracy, and Feature Importances
 app.get("/api/model-info", async (req, res) => {
